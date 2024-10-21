@@ -59,15 +59,16 @@
     padding: 20px;
     border-radius: var(--radius-50percent);
 
-    // .button--rounded .button__icon
-    #{$this}__icon {
-      width: 16px;
-      height: 16px;
-    }
-
     // .button--rounded .button__text
     #{$this}__text {
-      display: none;
+      line-height: 1;
+
+      // .button--rounded .button__text svg
+      svg {
+        display: block;
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 }

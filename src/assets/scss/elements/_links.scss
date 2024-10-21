@@ -1,0 +1,15 @@
+@use '../theme/theme' as theme;
+
+.link {
+  @include theme.text-style-helper(textsb);
+
+  color: var(--colors-green-light);
+  text-decoration: none;
+  transition: all var(--transition-time-10) var(--transition-easing-linear);
+
+  // .link:hover, .link:focus
+  &:hover,
+  &:focus {
+    color: var(--colors-white);
+  }
+}

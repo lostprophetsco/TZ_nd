@@ -9,15 +9,14 @@
   </Button>
 
   <Button modifier="rounded">
-    Вход
-    <template #icon>
-      <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-        <use :href="`#${iconAdd}`" />
-      </svg>
-    </template>
+    <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+      <use :href="`#${iconAdd}`" />
+    </svg>
   </Button>
 
   <Button disabled>Test</Button>
+
+  <a href="#" class="link">Зарегистрируйтесь</a>
 </template>
 <script setup lang="ts">
 // Imports
