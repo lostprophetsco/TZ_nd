@@ -149,7 +149,7 @@ CSS переменные миксина `fonts-weight`:
 --fonts-weight-h2: 600;
 --fonts-weight-h3: 400;
 --fonts-weight-h4: 600;
---fonts-weight-text: 600;
+--fonts-weight-text: 500;
 --fonts-weight-texts: 400;
 --fonts-weight-textsb: 700;
 
