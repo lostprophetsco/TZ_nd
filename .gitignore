@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 package-lock.json
+ice-theme-generator
+theme.config.js
