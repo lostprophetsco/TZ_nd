@@ -84,15 +84,15 @@ Parameters:
 CSS переменные темы `theme-default`:
 
 ```
---colors-brand-primary-dark: #0A1F38;
---colors-brand-primary-dark-middle: #1B2F46;
---colors-brand-primary-dark-light: #2F4056;
---colors-brand-primary-gray: #9DA5AF;
---colors-brand-primary-green-dark: #819400;
---colors-brand-primary-green-middle: #97AB0D;
---colors-brand-primary-green: #A5BB0C;
---colors-brand-primary-green-light: #B1C909;
---colors-brand-primary-white: #ffffff;
+--colors-dark: #0A1F38;
+--colors-dark-middle: #1B2F46;
+--colors-dark-light: #2F4056;
+--colors-gray: #9DA5AF;
+--colors-green-dark: #819400;
+--colors-green-middle: #97AB0D;
+--colors-green: #A5BB0C;
+--colors-green-light: #B1C909;
+--colors-white: #ffffff;
 
 ```
 

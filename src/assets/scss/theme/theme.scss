@@ -247,15 +247,15 @@ $break-xxl: 1920px;
 }
 
 @mixin theme-default() {
-  --colors-brand-primary-dark: #0a1f38;
-  --colors-brand-primary-dark-middle: #1b2f46;
-  --colors-brand-primary-dark-light: #2f4056;
-  --colors-brand-primary-gray: #9da5af;
-  --colors-brand-primary-green-dark: #819400;
-  --colors-brand-primary-green-middle: #97ab0d;
-  --colors-brand-primary-green: #a5bb0c;
-  --colors-brand-primary-green-light: #b1c909;
-  --colors-brand-primary-white: #fff;
+  --colors-dark: #0a1f38;
+  --colors-dark-middle: #1b2f46;
+  --colors-dark-light: #2f4056;
+  --colors-gray: #9da5af;
+  --colors-green-dark: #819400;
+  --colors-green-middle: #97ab0d;
+  --colors-green: #a5bb0c;
+  --colors-green-light: #b1c909;
+  --colors-white: #fff;
 }
 
 @mixin fonts-family() {
