@@ -20,8 +20,6 @@
     gap: 12px;
     align-items: center;
     justify-content: center;
-
-    @include theme.text-style-helper(text);
   }
 
   // .button__icon
@@ -29,8 +27,14 @@
     display: block;
     width: 32px;
     height: 32px;
+    line-height: 1;
     color: currentcolor;
     fill: currentcolor;
+  }
+
+  // .button__text
+  &__text {
+    @include theme.text-style-helper(text);
   }
 
   // .button:hover, .button:focus
