@@ -23,7 +23,6 @@
     placeholder="Значение"
     label="Заголовок"
     :counter="{ visible: true, max: 10 }"
-    error="Сообщение ошибки Сообщение ошибки"
   >
   </InputText>
 
