@@ -1,0 +1,74 @@
+@use '../../theme/theme' as theme;
+
+.button {
+  $this: &;
+
+  display: inline-flex;
+  padding: 12px 24px;
+  font-family: var(--fonts-family-montserrat), system-ui-sans-serif, sans-serif;
+  color: var(--colors-white);
+  cursor: pointer;
+  background-color: var(--colors-green-light);
+  border: none;
+  border-radius: var(--radius-32);
+  transition: all var(--transition-time-10) var(--transition-easing-linear);
+
+  // .button__group
+  &__group {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // .button__icon
+  &__icon {
+    display: block;
+    width: 32px;
+    height: 32px;
+    line-height: 1;
+    color: currentcolor;
+    fill: currentcolor;
+  }
+
+  // .button__text
+  &__text {
+    @include theme.text-style-helper(text);
+  }
+
+  // .button:hover, .button:focus
+  &:hover,
+  &:focus {
+    background-color: var(--colors-green);
+  }
+
+  // .button:active
+  &:active {
+    background-color: var(--colors-green-dark);
+  }
+
+  // .button--disabled
+  &--disabled {
+    pointer-events: none;
+    background-color: var(--colors-gray);
+  }
+
+  // .button--rounded
+  &--rounded {
+    padding: 20px;
+    border-radius: var(--radius-50percent);
+
+    // .button--rounded .button__text
+    #{$this}__text {
+      line-height: 1;
+
+      // .button--rounded .button__text svg
+      svg {
+        display: block;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}

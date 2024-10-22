@@ -1,0 +1,97 @@
+@use '../../theme/theme' as theme;
+@use '../../mixins' as mixins;
+
+.input-default {
+  $this: &;
+
+  @include theme.text-style-helper(texts);
+
+  // .input-default__group
+  &__group {
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  // .input-default__label
+  &__label {
+    width: 100%;
+    padding: 0 24px;
+    color: var(--colors-gray);
+  }
+
+  // .input-default__input-wrapper
+  &__input-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 22px 28px;
+    color: var(--colors-dark);
+    background-color: var(--colors-white);
+    border: 2px transparent solid;
+    border-radius: var(--radius-36);
+    transition: all var(--transition-time-10) var(--transition-easing-linear);
+  }
+
+  // .input-default__input
+  &__input {
+    flex-grow: 1;
+    font-family: var(--fonts-family-montserrat), system-ui-sans-serif, sans-serif;
+    background-color: transparent;
+    border: 0;
+    outline: none;
+
+    @include theme.text-style-helper(texts);
+
+    @include mixins.placeholder {
+      color: var(--colors-gray);
+    }
+  }
+
+  // .input-default__password-toggle
+  &__password-toggle {
+    display: inline-flex;
+    flex-shrink: 0;
+    background-color: transparent;
+    border: 0;
+  }
+
+  // .input-default__footer
+  &__footer {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 10px;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 24px;
+    margin-top: 8px;
+  }
+
+  // .input-default__error
+  &__error {
+    flex-grow: 1;
+    color: #ff7461;
+  }
+
+  // .input-default__counter
+  &__counter {
+    flex-shrink: 0;
+    color: var(--colors-gray);
+  }
+
+  // .input-default--hover, .input-default--focused, .input-default--filled
+  &--hover,
+  &--focused,
+  &--filled {
+    // .input-default--hover .input-default__input-wrapper,
+    // .input-default--focused .input-default__input-wrapper,
+    // .input-default--filled .input-default__input-wrapper
+    #{$this}__input-wrapper {
+      border: 2px solid var(--colors-green-light);
+    }
+  }
+}

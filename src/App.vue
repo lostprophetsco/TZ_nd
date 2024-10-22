@@ -18,12 +18,16 @@
 
   <a href="#" class="link">Зарегистрируйтесь</a>
 
-  <InputText v-model="test" :counter="{ visible: true, max: 10 }"></InputText>
+  <InputText
+    v-model="test"
+    placeholder="Значение"
+    label="Заголовок"
+    :counter="{ visible: true, max: 10 }"
+    error="Сообщение ошибки Сообщение ошибки"
+  >
+  </InputText>
 
-  <InputText v-model="test2" type="password">
-    <template #passwordIcon="{ passwordVisible }">
-      {{ passwordVisible }}
-    </template>
+  <InputText v-model="test2" placeholder="Введите значение" label="Заголовок" type="password">
   </InputText>
 </template>
 <script setup lang="ts">

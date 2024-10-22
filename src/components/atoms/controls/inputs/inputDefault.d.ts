@@ -78,7 +78,7 @@ export interface IInputTextProps {
    * @description Input root CSS class.
    *
    * @type string
-   * @default 'input-text'
+   * @default 'input-default'
    */
   cssClass?: string;
 

@@ -5,36 +5,38 @@
         {{ props.label }}
       </label>
 
-      <input
-        v-model="model"
-        :type="props.type"
-        :id="props.id || generatedUid"
-        :placeholder="defaultPlaceholder"
-        :autocomplete="props.autocomplete ? 'on' : 'off'"
-        :disabled="props.disabled"
-        :class="`${props.cssClass}__input`"
-        :name="props.name"
-        v-on="listeners"
-        ref="inputField"
-        @mouseover="hover = true"
-        @mouseleave="hover = false"
-      />
+      <div :class="`${props.cssClass}__input-wrapper`">
+        <input
+          v-model="model"
+          :type="props.type"
+          :id="props.id || generatedUid"
+          :placeholder="defaultPlaceholder"
+          :autocomplete="props.autocomplete ? 'on' : 'off'"
+          :disabled="props.disabled"
+          :class="`${props.cssClass}__input`"
+          :name="props.name"
+          v-on="listeners"
+          ref="inputField"
+          @mouseover="hover = true"
+          @mouseleave="hover = false"
+        />
 
-      <button
-        v-if="props.type === 'password'"
-        type="button"
-        :aria-label="passwordVisible ? 'Hide password' : 'Show password'"
-        @click="passwordVisibleHandler"
-        :class="`${props.cssClass}__toggle`"
-      >
-        <slot name="passwordIcon" :passwordVisible="passwordVisible">
-          <Transition name="fade">
-            <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-              <use :href="`#${passwordVisible ? offPassword : onPassword}`" />
-            </svg>
-          </Transition>
-        </slot>
-      </button>
+        <button
+          v-if="props.type === 'password'"
+          type="button"
+          :aria-label="passwordVisible ? 'Hide password' : 'Show password'"
+          @click="passwordVisibleHandler"
+          :class="`${props.cssClass}__password-toggle`"
+        >
+          <slot name="passwordIcon" :passwordVisible="passwordVisible">
+            <Transition name="fade">
+              <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                <use :href="`#${passwordVisible ? offPassword : onPassword}`" />
+              </svg>
+            </Transition>
+          </slot>
+        </button>
+      </div>
     </div>
 
     <div v-if="!!slots.placeholder" :class="`${props.cssClass}__placeholder`">
@@ -73,7 +75,7 @@ const props = withDefaults(defineProps<IInputTextProps>(), {
   type: 'text',
   autocomplete: false,
   disabled: false,
-  cssClass: 'input-text',
+  cssClass: 'input-default',
   valid: false,
   error: false,
   counter: () => ({ visible: false }),
