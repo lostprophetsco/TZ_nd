@@ -6,6 +6,7 @@
 @import './theme/theme';
 @import './elements';
 @import './atoms';
+@import './molecules';
 
 :root {
   @include theme.grid-settings;

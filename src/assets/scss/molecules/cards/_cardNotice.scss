@@ -1,0 +1,36 @@
+@use '../../theme/theme' as theme;
+
+.card-notice {
+  clip-path: polygon(calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%, 0 0);
+  color: var(--colors-white);
+  background-color: var(--colors-green-light);
+  border-radius: var(--radius-12);
+
+  @include theme.text-style-helper(text);
+
+  // .card-notice__header
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px 20px 28px;
+    background-image: url('@/assets/images/notice-corner.svg');
+    background-repeat: no-repeat;
+    background-position: right top;
+    border-bottom: 1px var(--colors-green) solid;
+
+    @include theme.text-style-helper(h4);
+  }
+
+  // .card-notice__body
+  &__body {
+    padding: 20px 28px;
+  }
+
+  // .card-notice__footer
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px;
+  }
+}
