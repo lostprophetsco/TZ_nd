@@ -137,6 +137,10 @@ export interface IInputTextSlots {
    */
   error(): VNode[];
 
+  /**
+   * @description Custom icon.
+   * @param scope
+   */
   passwordIcon?(scope: { passwordVisible: boolean }): VNode[];
 }
 

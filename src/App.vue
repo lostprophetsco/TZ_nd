@@ -29,6 +29,15 @@
 
   <InputText v-model="test2" placeholder="Введите значение" label="Заголовок" type="password">
   </InputText>
+
+  <InputTextarea
+    v-model="test3"
+    placeholder="Введите значение"
+    label="Заголовок"
+    :rows="10"
+    :counter="{ visible: true, max: 10 }"
+    error="Сообщение ошибки Сообщение ошибки"
+  ></InputTextarea>
 </template>
 <script setup lang="ts">
 // Imports
@@ -40,7 +49,9 @@ import iconLogin from './assets/images/icons/login.svg';
 // Components
 import Button from './components/atoms/buttons/button.vue';
 import InputText from './components/atoms/controls/inputs/inputDefault.vue';
+import InputTextarea from './components/atoms/controls/textarea/textareaDefault.vue';
 
 const test = ref(null);
 const test2 = ref(null);
+const test3 = ref(null);
 </script>
