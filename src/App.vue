@@ -55,11 +55,31 @@
       </Button>
     </template>
   </CardNotice>
+
+  <transition name="fade" mode="out-in">
+    <Modal v-if="isModalOpened" :isOpen="isModalOpened" @modal-close="closeModal">
+      Some default slot content
+
+      <template #closeButton="{ closeModal }">
+        <Button modifier="rounded" @click.stop="closeModal">
+          <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+            <use :href="`#${iconClose}`" />
+          </svg>
+        </Button>
+      </template>
+    </Modal>
+  </transition>
+
+  <Button @click.stop="openModal">Open modal</Button>
 </template>
 <script setup lang="ts">
 // Imports
 import { ref } from 'vue';
 
+// Composables
+import useBody from '@/composables/dom/useBody';
+
+// Icons
 import iconAdd from './assets/images/icons/add.svg';
 import iconLogin from './assets/images/icons/login.svg';
 import iconClose from './assets/images/icons/close.svg';
@@ -69,8 +89,22 @@ import Button from './components/atoms/buttons/button.vue';
 import InputText from './components/atoms/controls/inputs/inputDefault.vue';
 import InputTextarea from './components/atoms/controls/textarea/textareaDefault.vue';
 import CardNotice from './components/molecules/card/notice.vue';
+import Modal from './components/molecules/modal/modal.vue';
 
 const test = ref(null);
 const test2 = ref(null);
 const test3 = ref(null);
+
+// Modal
+const { toggleBodyClass } = useBody();
+
+const isModalOpened = ref(false);
+const openModal = () => {
+  isModalOpened.value = true;
+  toggleBodyClass('add', 'overflow-hidden');
+};
+const closeModal = () => {
+  isModalOpened.value = false;
+  toggleBodyClass('remove', 'overflow-hidden');
+};
 </script>
