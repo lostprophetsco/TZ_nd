@@ -10,6 +10,8 @@
     "theme": "node theme.config.js && stylelint \"./src/assets/scss/theme/**/*.scss\" --fix && prettier --write \"./src/assets/scss/theme/**/*.scss\""
   },
   "dependencies": {
+    "@vuelidate/core": "^2.0.3",
+    "@vuelidate/validators": "^2.0.4",
     "reset-css": "^5.0.2",
     "vue": "^3.5.10"
   },
