@@ -9,8 +9,8 @@
   grid-template-columns: repeat(4, 1fr);
   align-items: center;
   width: 100%;
-  height: 100vh;
-  padding: 0 var(--fields);
+  height: 100%;
+  padding: var(--fields);
   visibility: hidden;
   opacity: 0;
   transition: opacity 2s var(--transition-easing-linear);
@@ -41,8 +41,17 @@
     z-index: 11;
     grid-column: span 4;
     padding: 90px 16px;
+    overflow-y: auto;
     background: var(--colors-dark-middle);
     border-radius: 40px;
+
+    @supports (max-height: 100dvh) {
+      max-height: calc(100dvh - var(--fields) * 2);
+    }
+
+    @supports not (max-height: 100dvh) {
+      max-height: calc(100vh - var(--fields) * 2);
+    }
 
     @include theme.md {
       grid-column: span 8;
