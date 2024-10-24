@@ -1,0 +1,83 @@
+@use '../../theme/theme' as theme;
+
+.m-form {
+  $this: '.m-form';
+
+  color: var(--colors-white);
+
+  // .m-form__default
+  &__default {
+    display: flex !important;
+    flex-flow: column;
+    gap: 28px;
+    transition: all var(--transition-time-10) var(--transition-easing-linear);
+
+    @include theme.md {
+      gap: 40px;
+    }
+  }
+
+  // .m-form__default-title
+  &__default-title {
+    @include theme.text-style-helper(h2);
+
+    color: var(--colors-white);
+  }
+
+  // .m-form__default-body
+  &__default-body {
+    display: flex;
+    flex-flow: column;
+    gap: 16px;
+
+    @include theme.md {
+      gap: 24px;
+    }
+  }
+
+  // .m-form__form-footer
+  &__form-footer {
+    display: flex;
+    flex-flow: column;
+    gap: 12px;
+    align-items: stretch;
+    margin-top: 12px;
+    color: var(--colors-gray);
+    text-align: center;
+
+    @include theme.md {
+      flex-flow: row;
+      align-items: center;
+      margin-top: 16px;
+      text-align: left;
+    }
+  }
+
+  // .m-form__footer-text
+  &__footer-text {
+    flex-grow: 1;
+    order: 2;
+
+    @include theme.md {
+      order: 0;
+    }
+  }
+
+  // .m-form__error
+  &__error {
+    padding: 8px 20px;
+    margin-top: 28px;
+    color: #ff7461;
+    background-color: rgb(255 116 97 / 10%);
+    border-radius: 24px;
+  }
+
+  // .m-form__success
+  &__success {
+    padding: 8px 20px;
+    margin-top: 28px;
+    color: var(--colors-green-dark);
+    background-color: rgb(177 201 9 / 10%);
+    border-radius: 24px;
+  }
+}
