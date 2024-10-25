@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vite build --out-dir dist",
+    "build-dev": "vite build --out-dir dist --mode development",
     "preview": "vite preview",
     "theme": "node theme.config.js && stylelint \"./src/assets/scss/theme/**/*.scss\" --fix && prettier --write \"./src/assets/scss/theme/**/*.scss\""
   },
