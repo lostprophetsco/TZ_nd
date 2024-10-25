@@ -90,6 +90,7 @@
       </div>
     </form>
   </div>
+  {{ validations.confirmPassword }}
 </template>
 
 <script setup lang="ts">
@@ -113,6 +114,7 @@ import validations from '../form.validation.messages';
 // Models
 import { EFormStates, EFormStateMessages } from '../form.types.ts';
 import { FormRegistrationModel } from './formRegistration.model.ts';
+import { helpers, sameAs } from '@vuelidate/validators';
 
 const emit = defineEmits<IFormEmits<IFormRegistrationModel>>();
 const props = withDefaults(defineProps<IFormProps>(), {
@@ -133,7 +135,7 @@ const rules = computed(() => {
     password: { required: validations.required() },
     confirmPassword: {
       required: validations.required(),
-      confirmPassword: validations.confirmPassword,
+      sameAs: helpers.withMessage('Пароли не совпадают', sameAs(formData.value.password)),
     },
   };
 });
