@@ -67,23 +67,36 @@
     </div>
   </section>
 
-  <!--  <CardNotice title="Lorem ipsum dolor sit amet consectetur adipisicing elit.">-->
-  <!--    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus cum earum facere laborum,-->
-  <!--    officia qui? Amet atque blanditiis culpa debitis, delectus distinctio eius esse et fugiat illo-->
-  <!--    illum ipsam itaque laboriosam molestias odit perferendis porro possimus provident quae quaerat-->
-  <!--    ratione saepe veniam?-->
-  <!--    <template #deleteButton>-->
-  <!--      <Button>-->
-  <!--        <template #icon>-->
-  <!--          <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">-->
-  <!--            <use :href="`#${iconClose}`" />-->
-  <!--          </svg>-->
-  <!--        </template>-->
+  <section v-if="isUserAuth" class="notes">
+    <div class="container notes__container">
+      <CardNotice v-for="note in notes" :title="note.title" :key="note.id">
+        {{ note.content }}
+        <template #deleteButton>
+          <Button>
+            <template #icon>
+              <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                <use :href="`#${iconClose}`" />
+              </svg>
+            </template>
 
-  <!--        Удалить-->
-  <!--      </Button>-->
-  <!--    </template>-->
-  <!--  </CardNotice>-->
+            Удалить
+          </Button>
+        </template>
+      </CardNotice>
+    </div>
+  </section>
+
+  <Button
+    v-if="isUserAuth"
+    @click.stop="openModal('addNote')"
+    modifier="rounded"
+    class="add-note-button"
+    aria-label="Add note"
+  >
+    <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+      <use :href="`#${iconAdd}`" />
+    </svg>
+  </Button>
 
   <transition name="fade" mode="out-in">
     <Modal v-if="isModalOpened" :isOpen="isModalOpened" @modal-close="closeModal">
@@ -165,7 +178,7 @@ import CardNotice from './components/molecules/card/notice.vue';
 import Modal from './components/molecules/modal/modal.vue';
 
 // User
-const isUserAuth = ref(false);
+const isUserAuth = ref(true);
 interface IUserData {
   email: string | number | Date | null;
 }
@@ -242,8 +255,13 @@ const formSwitcher = (formName: 'login' | 'registration' | 'addNote') => {
 };
 
 // Requests
+interface INotes {
+  id: number;
+  title: string;
+  content: string;
+}
 const token = ref('');
-const notes = ref([]);
+const notes = ref<INotes[]>();
 const authEndPoint = 'https://dist.nd.ru/api/auth';
 const regEndPoint = 'https://dist.nd.ru/api/reg';
 
