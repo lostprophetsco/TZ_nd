@@ -45,7 +45,12 @@
           <div class="m-form__form-footer">
             <slot name="footerText"> </slot>
 
-            <Button tag="button" type="submit" :disabled="v$.$invalid">
+            <Button
+              tag="button"
+              type="submit"
+              :disabled="v$.$invalid || props.loading"
+              :loading="props.loading"
+            >
               <template #loading> В процессе </template>
               <slot name="buttonText">Добавить</slot>
             </Button>

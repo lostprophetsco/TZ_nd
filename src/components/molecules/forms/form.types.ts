@@ -31,6 +31,12 @@ export interface IFormProps {
    * @type boolean
    */
   success?: boolean;
+
+  /**
+   * @description Form loading state
+   * @type boolean
+   */
+  loading?: boolean;
 }
 
 /**
