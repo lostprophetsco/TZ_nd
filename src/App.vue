@@ -72,7 +72,7 @@
       <CardNotice v-for="note in notes" :title="note.title" :key="note.id">
         {{ note.content }}
         <template #deleteButton>
-          <Button>
+          <Button @click.stop="deleteNote(note.id)">
             <template #icon>
               <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
                 <use :href="`#${iconClose}`" />
@@ -135,12 +135,20 @@
           </template>
 
           <template #error>
-            <span v-for="(error, index) in formErrorState.message">
-              <span style="display: block" :key="index">{{ error }}</span>
-            </span>
+            <template v-if="Array.isArray(formErrorState.message)">
+              <span v-for="(error, index) in formErrorState.message">
+                <span style="display: block" :key="index">{{ error }}</span>
+              </span>
+            </template>
+
+            <template v-else>
+              {{ formErrorState.message }}
+            </template>
           </template>
 
-          <template #success>{{ formSuccessState.message }}</template>
+          <template #success>
+            {{ formSuccessState.message }}
+          </template>
         </component>
       </keep-alive>
 
@@ -153,11 +161,6 @@
       </template>
     </Modal>
   </transition>
-
-  <!--  <Button @click.stop="openModal('login')">Open modal login</Button>-->
-  <!--  <Button @click.stop="openModal('registration')">Open modal register</Button>-->
-  <!--  <Button @click.stop="openModal('addNote')">Open modal addNote</Button>-->
-  <!--  <Button @click="getAuth">Send auth</Button>-->
 </template>
 <script setup lang="ts">
 // Imports
@@ -178,7 +181,7 @@ import CardNotice from './components/molecules/card/notice.vue';
 import Modal from './components/molecules/modal/modal.vue';
 
 // User
-const isUserAuth = ref(true);
+const isUserAuth = ref(false);
 interface IUserData {
   email: string | number | Date | null;
 }
@@ -228,7 +231,7 @@ const formSuccessState = ref<IFormState>({
 // Import forms components
 import { IFormLoginModel } from '@/components/molecules/forms/formLogin/formLogin.model.ts';
 import { IFormRegistrationModel } from './components/molecules/forms/formRegistration/formRegistration.model.ts';
-// import { IFormAddNoteModel } from './components/molecules/forms/formAddNote/formAddNote.model.ts';
+import { IFormAddNoteModel } from './components/molecules/forms/formAddNote/formAddNote.model.ts';
 const formLogin = defineAsyncComponent(
   () => import('./components/molecules/forms/formLogin/formLogin.vue'),
 );
@@ -261,9 +264,10 @@ interface INotes {
   content: string;
 }
 const token = ref('');
-const notes = ref<INotes[]>();
+const notes = ref<INotes[]>([]);
 const authEndPoint = 'https://dist.nd.ru/api/auth';
 const regEndPoint = 'https://dist.nd.ru/api/reg';
+const noteEndPoint = 'https://dist.nd.ru/api/notes';
 
 /**
  * @description Send auth request to get access token
@@ -287,20 +291,19 @@ const getAuth = (formData: IFormLoginModel) => {
   })
     .then((response) => response.json())
     .then((data) => {
-      if (data.statusCode !== 200) {
-        console.log(data, 'эне ок');
+      if (data.statusCode) {
         formErrorState.value.status = true;
         formErrorState.value.message = data.message;
       } else {
-        console.log(data, 'ok');
         isUserAuth.value = true;
         token.value = data.accessToken;
-        localStorage.setItem('accessToken', JSON.stringify(data.accessToken));
-        localStorage.setItem('email', JSON.stringify(bodyData.email));
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('email', bodyData.email);
         userData.value.email = bodyData.email;
         formSuccessState.value.status = true;
         formSuccessState.value.message =
           'Авторизация прошла успешно. Закройте окно или оно само будет закрыто через 5 секунд';
+        getNotes();
 
         setTimeout(() => {
           formSuccessState.value.status = false;
@@ -310,10 +313,25 @@ const getAuth = (formData: IFormLoginModel) => {
     })
     .catch((error) => {
       console.log(error);
-      formErrorState.value.status = true;
-      formErrorState.value.message = error;
     });
   formLoadingState.value = false;
+};
+
+const delAuth = () => {
+  fetch(authEndPoint, {
+    method: 'DELETE',
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      isUserAuth.value = false;
+      token.value = '';
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('email');
+      userData.value.email = null;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 const getRegistration = (formData: IFormRegistrationModel) => {
@@ -337,100 +355,87 @@ const getRegistration = (formData: IFormRegistrationModel) => {
     .then((response) => response.json())
     .then((data) => {
       if (data.statusCode) {
-        console.log(data, 'эне ок reg');
         formErrorState.value.status = true;
         formErrorState.value.message = data.message;
       } else {
-        console.log(data, 'ok reg');
+        localStorage.setItem('email', bodyData.email);
+        userData.value.email = bodyData.email;
+        formData.email = bodyData.email;
         formSuccessState.value.status = true;
-        formSuccessState.value.message = 'Теперь вы можете войти в аккаунт';
-
-        setTimeout(() => {
-          formSuccessState.value.status = false;
-          closeModal();
-        }, 5000);
+        formSuccessState.value.message = 'Теперь вы можете войти в аккаунт.';
       }
     })
     .catch((error) => {
       console.log(error);
-      formErrorState.value.status = true;
-      formErrorState.value.message = error;
     });
   formLoadingState.value = false;
 };
 
-const delAuth = () => {
-  console.log('123');
+const getNotes = () => {
+  fetch(noteEndPoint, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token.value}`,
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      notes.value = data;
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
 };
 
-// const delAuth = () => {
-//   const data = {
-//     email: 'userData@example.com',
-//     password: '123123',
-//   };
-//   fetch(authEndPoint, {
-//     method: 'DELETE',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: `Bearer ${token.value}`,
-//     },
-//     body: JSON.stringify(data),
-//   })
-//     .then((response) => response.json())
-//     .then((data) => {
-//       console.log(data);
-//     })
-//     .catch((error) => {
-//       console.error('Error:', error);
-//     });
-//   if (localStorage.getItem('accessToken')) {
-//     if (token.value) {
-//       localStorage.removeItem('accessToken');
-//       token.value = null;
-//       userData.value.email = '';
-//       isShowLogoutLinkVisible.value = false;
-//     }
-//   }
-// };
+const addNote = (formData: IFormAddNoteModel) => {
+  const bodyData = {
+    title: formData.title,
+    content: formData.text,
+  };
+  fetch(noteEndPoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token.value}`,
+    },
+    body: JSON.stringify(bodyData),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (!data.statusCode) {
+        getNotes();
+        formSuccessState.value.status = true;
+        formSuccessState.value.message = 'Заметка добавлена';
+      } else {
+        formErrorState.value.status = true;
+        formErrorState.value.message = data.message;
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+};
 
-// const getNotes = () => {
-//   fetch('https://dist.nd.ru/api/notes', {
-//     method: 'GET',
-//     headers: {
-//       Authorization: `Bearer ${token.value}`,
-//     },
-//   })
-//     .then((response) => response.json())
-//     .then((data) => {
-//       notes.value = data;
-//       console.log('Success:', data);
-//     })
-//     .catch((error) => {
-//       console.error('Error:', error);
-//     });
-// };
+const deleteNote = (id: number) => {
+  fetch(noteEndPoint + '/' + id, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token.value}`,
+    },
+    body: JSON.stringify({}),
+  })
+    .then((response) => response)
+    .then((data) => {
+      getNotes();
 
-// const addNote = () => {
-//   fetch('https://dist.nd.ru/api/notes', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: `Bearer ${token.value}`,
-//     },
-//     body: JSON.stringify({
-//       title: 'Новая заметка',
-//       content: 'Текст заметки',
-//     }),
-//   })
-//     .then((response) => response.json())
-//     .then((data) => {
-//       notes.value.push(data);
-//       console.log('Success:', data);
-//     })
-//     .catch((error) => {
-//       console.error('Error:', error);
-//     });
-// };
+      console.log(data);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+};
 
 /**
  * Switches between different form handlers based on the given form name.
@@ -447,16 +452,18 @@ const formHandlerSwitcher = (formName: 'login' | 'registration' | 'addNote') => 
       formHandlerFunction.value = getRegistration;
       break;
     case 'addNote':
-      // formHandlerFunction.value = addNote;
+      formHandlerFunction.value = addNote;
       break;
   }
 };
 
 onMounted(() => {
-  if (!token.value || token.value === 'null') return;
+  token.value = localStorage.getItem('accessToken') || '';
 
-  isUserAuth.value = true;
-  userData.value.email = JSON.parse(localStorage.getItem('email') || '');
-  token.value = JSON.parse(localStorage.getItem('accessToken') || '');
+  if (token.value) {
+    isUserAuth.value = true;
+    userData.value.email = localStorage.getItem('email');
+    getNotes();
+  }
 });
 </script>

@@ -1,6 +1,8 @@
 @use '../../theme/theme' as theme;
 
 .card-notice {
+  display: flex;
+  flex-flow: column;
   clip-path: polygon(calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%, 0 0);
   color: var(--colors-white);
   background-color: var(--colors-green-light);
@@ -25,6 +27,8 @@
   // .card-notice__body
   &__body {
     padding: 20px 28px;
+    word-break: break-all;
+    white-space: wrap;
   }
 
   // .card-notice__footer
@@ -32,5 +36,6 @@
     display: flex;
     justify-content: flex-end;
     padding: 8px;
+    margin-top: auto;
   }
 }
