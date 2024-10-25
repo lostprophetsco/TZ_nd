@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build --out-dir dist",
     "build-dev": "vite build --out-dir dist --mode development",
+    "deploy": "gh-pages -d dist",
     "preview": "vite preview",
     "theme": "node theme.config.js && stylelint \"./src/assets/scss/theme/**/*.scss\" --fix && prettier --write \"./src/assets/scss/theme/**/*.scss\""
   },
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@types/node": "^20.9.3",
     "@vitejs/plugin-vue": "^5.1.4",
+    "gh-pages": "^5.0.0",
     "prettier": "^3.1.0",
     "rollup": "^4.5.0",
     "rollup-plugin-clear": "^2.0.7",
