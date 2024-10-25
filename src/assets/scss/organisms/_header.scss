@@ -1,0 +1,55 @@
+@use '../theme/theme' as theme;
+
+.header {
+  padding: 20px 0;
+  color: var(--colors-white);
+
+  @include theme.text-style-helper(texts);
+
+  @include theme.md {
+    padding: 23px 0;
+  }
+
+  @include theme.xxl {
+    padding: 43px 0;
+  }
+
+  // .header__container
+  &__container {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  // .header__logo
+  &__logo {
+    flex-shrink: 0;
+    max-height: 50px;
+    overflow: hidden;
+  }
+
+  // .header__button
+  &__button {
+    display: flex;
+    flex-shrink: 1;
+    flex-flow: row nowrap;
+    gap: 12px;
+    align-items: center;
+    overflow: hidden;
+
+    .button {
+      @media screen and (max-width: theme.$break-md) {
+        padding: 12px;
+      }
+    }
+
+    // .header__button-email
+    &-email {
+      flex-grow: 0;
+      width: auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

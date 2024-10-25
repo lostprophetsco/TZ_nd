@@ -1,42 +1,47 @@
 <template>
-  <Button
-    >Вход
-    <template #icon>
-      <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
-        <use :href="`#${iconLogin}`" />
-      </svg>
-    </template>
-  </Button>
+  <header class="header">
+    <div class="container header__container">
+      <picture class="header__logo logo">
+        <source
+          media="(max-width: 768px)"
+          width="37"
+          height="36"
+          srcset="@/assets/images/logo-mobile.svg"
+        />
+        <img
+          src="@/assets/images/logo.svg"
+          width="219"
+          height="50"
+          alt="logo"
+          class="logo__image"
+        />
+      </picture>
 
-  <Button modifier="rounded">
-    <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-      <use :href="`#${iconAdd}`" />
-    </svg>
-  </Button>
+      <div class="header__button">
+        <Button v-if="!isUserAuth" @click.stop="openModal('login')">
+          Вход
+          <template #icon>
+            <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+              <use :href="`#${iconLogin}`" />
+            </svg>
+          </template>
+        </Button>
 
-  <Button disabled>Test</Button>
+        <template v-else>
+          <span class="header__button-email">{{ user.email || 'someLongLongTestEmail.com' }}</span>
+          <Button modifier="rounded" @click.stop="showLogout = !showLogout">
+            <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+              <use :href="`#${iconUser}`" />
+            </svg>
+          </Button>
 
-  <a href="#" class="link">Зарегистрируйтесь</a>
-
-  <InputText
-    v-model="test"
-    placeholder="Значение"
-    label="Заголовок"
-    :counter="{ visible: true, max: 10 }"
-  >
-  </InputText>
-
-  <InputText v-model="test2" placeholder="Введите значение" label="Заголовок" type="password">
-  </InputText>
-
-  <InputTextarea
-    v-model="test3"
-    placeholder="Введите значение"
-    label="Заголовок"
-    :rows="10"
-    :counter="{ visible: true, max: 10 }"
-    error="Сообщение ошибки Сообщение ошибки"
-  ></InputTextarea>
+          <div class="header__button-logout" v-if="showLogout">
+            <!--            <a href="#" @click.stop="delAuth" class="link">Выйти</a>-->
+          </div>
+        </template>
+      </div>
+    </div>
+  </header>
 
   <CardNotice title="Lorem ipsum dolor sit amet consectetur adipisicing elit.">
     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus cum earum facere laborum,
@@ -61,9 +66,10 @@
       <keep-alive>
         <component
           :is="formComponent"
-          @submit="getAuth"
+          @submit="formHandler($event)"
           :error="formError.status"
           :success="formSuccess.status"
+          :loading="formLoading"
         >
           <template #buttonText>
             {{
@@ -111,39 +117,40 @@
   <Button @click.stop="openModal('registration')">Open modal register</Button>
   <Button @click.stop="openModal('addNote')">Open modal addNote</Button>
   <Button @click="getAuth">Send auth</Button>
-  {{ token }}
-  <pre>
-    {{ notes }}
-  </pre>
 </template>
 <script setup lang="ts">
 // Imports
-import { defineAsyncComponent, ref, shallowRef } from 'vue';
+import { defineAsyncComponent, onMounted, ref, shallowRef } from 'vue';
 
 // Composables
 import useBody from '@/composables/dom/useBody';
 
 // Icons
+import iconUser from './assets/images/icons/icon-user.svg';
 import iconAdd from './assets/images/icons/add.svg';
 import iconLogin from './assets/images/icons/login.svg';
 import iconClose from './assets/images/icons/close.svg';
 
 // Components
 import Button from './components/atoms/buttons/button.vue';
-import InputText from './components/atoms/controls/inputs/inputDefault.vue';
-import InputTextarea from './components/atoms/controls/textarea/textareaDefault.vue';
 import CardNotice from './components/molecules/card/notice.vue';
 import Modal from './components/molecules/modal/modal.vue';
 
-const test = ref(null);
-const test2 = ref(null);
-const test3 = ref(null);
+// User
+const isUserAuth = ref(true);
+interface IUser {
+  email: string | number | Date | null;
+}
+const user = ref<IUser>({
+  email: null,
+});
+const showLogout = ref(true);
 
 // Modal
 const { toggleBodyClass } = useBody();
 const isModalOpened = ref(false);
-
 const openModal = (componentName: 'login' | 'registration' | 'addNote') => {
+  formHandlerSwitcher(componentName);
   formError.value.status = false;
   formSuccess.value.status = false;
   formComponent.value = formSwitcher(componentName);
@@ -158,6 +165,8 @@ const closeModal = () => {
 
 // Forms
 const formComponent = shallowRef(null as any);
+const formLoading = ref(false);
+const formHandler = ref();
 
 /**
  * @description Form status interface
@@ -176,6 +185,9 @@ const formSuccess = ref<IFormStatus>({
 });
 
 // Import forms components
+import { IFormLoginModel } from '@/components/molecules/forms/formLogin/formLogin.model.ts';
+import { IFormRegistrationModel } from './components/molecules/forms/formRegistration/formRegistration.model.ts';
+// import { IFormAddNoteModel } from './components/molecules/forms/formAddNote/formAddNote.model.ts';
 const formLogin = defineAsyncComponent(
   () => import('./components/molecules/forms/formLogin/formLogin.vue'),
 );
@@ -202,45 +214,134 @@ const formSwitcher = (formName: 'login' | 'registration' | 'addNote') => {
 };
 
 // Requests
-const token = ref(JSON.parse(localStorage.getItem('accessToken') || 'null'));
+const token = ref('');
 const notes = ref([]);
 const authEndPoint = 'https://dist.nd.ru/api/auth';
+const regEndPoint = 'https://dist.nd.ru/api/reg';
 
 /**
  * @description Send auth request to get access token
  */
-const getAuth = () => {
-  const data = {
-    email: 'user@example.com',
-    password: '123123',
+const getAuth = (formData: IFormLoginModel) => {
+  formLoading.value = true;
+  formSuccess.value.status = false;
+  formError.value.status = false;
+
+  const bodyData = {
+    email: formData.email,
+    password: formData.password,
   };
+
   fetch(authEndPoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(bodyData),
   })
     .then((response) => response.json())
     .then((data) => {
-      token.value = data.accessToken;
-      localStorage.setItem('accessToken', JSON.stringify(data.accessToken));
+      if (data.statusCode !== 200) {
+        console.log(data, 'эне ок');
+        formError.value.status = true;
+        formError.value.message = data.message;
+      } else {
+        console.log(data, 'ok');
+        isUserAuth.value = true;
+        token.value = data.accessToken;
+        localStorage.setItem('accessToken', JSON.stringify(data.accessToken));
+        localStorage.setItem('email', JSON.stringify(bodyData.email));
+        user.value.email = bodyData.email;
+        formSuccess.value.status = true;
+        formSuccess.value.message =
+          'Авторизация прошла успешно. Закройте окно или оно само будет закрыто через 5 секунд';
 
-      formSuccess.value.status = true;
-      formSuccess.value.message =
-        'Авторизация прошла успешно. Закройте окно или оно само будет закрыто через 5 секунд';
-
-      setTimeout(() => {
-        closeModal();
-      }, 5000);
-
-      formSuccess.value.status = false;
+        setTimeout(() => {
+          formSuccess.value.status = false;
+          closeModal();
+        }, 5000);
+      }
     })
     .catch((error) => {
+      console.log(error);
       formError.value.status = true;
-      formError.value.message = error.message;
+      formError.value.message = error;
     });
+  formLoading.value = false;
 };
+
+const getRegistration = (formData: IFormRegistrationModel) => {
+  formLoading.value = true;
+  formError.value.status = false;
+  formSuccess.value.status = false;
+
+  const bodyData = {
+    email: formData.email,
+    password: formData.password,
+    confirm_password: formData.confirmPassword,
+  };
+
+  fetch(regEndPoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(bodyData),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.statusCode) {
+        console.log(data, 'эне ок reg');
+        formError.value.status = true;
+        formError.value.message = data.message;
+      } else {
+        console.log(data, 'ok reg');
+        formSuccess.value.status = true;
+        formSuccess.value.message = 'Теперь вы можете войти в аккаунт';
+
+        setTimeout(() => {
+          formSuccess.value.status = false;
+          closeModal();
+        }, 5000);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      formError.value.status = true;
+      formError.value.message = error;
+    });
+  formLoading.value = false;
+};
+
+// const delAuth = () => {
+//   const data = {
+//     email: 'user@example.com',
+//     password: '123123',
+//   };
+//   fetch(authEndPoint, {
+//     method: 'DELETE',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: `Bearer ${token.value}`,
+//     },
+//     body: JSON.stringify(data),
+//   })
+//     .then((response) => response.json())
+//     .then((data) => {
+//       console.log(data);
+//     })
+//     .catch((error) => {
+//       console.error('Error:', error);
+//     });
+//   if (localStorage.getItem('accessToken')) {
+//     if (token.value) {
+//       localStorage.removeItem('accessToken');
+//       token.value = null;
+//       user.value.email = '';
+//       showLogout.value = false;
+//     }
+//   }
+// };
 
 // const getNotes = () => {
 //   fetch('https://dist.nd.ru/api/notes', {
@@ -280,4 +381,32 @@ const getAuth = () => {
 //       console.error('Error:', error);
 //     });
 // };
+
+/**
+ * Switches between different form handlers based on the given form name.
+ *
+ * @param formName - The name of the form for which to switch the handler.
+ * @returns The form handler function associated with the given form name.
+ */
+const formHandlerSwitcher = (formName: 'login' | 'registration' | 'addNote') => {
+  switch (formName) {
+    case 'login':
+      formHandler.value = getAuth;
+      break;
+    case 'registration':
+      formHandler.value = getRegistration;
+      break;
+    case 'addNote':
+      // formHandler.value = addNote;
+      break;
+  }
+};
+
+onMounted(() => {
+  if (!token.value || token.value === 'null') return;
+
+  isUserAuth.value = true;
+  user.value.email = JSON.parse(localStorage.getItem('email') || '');
+  token.value = JSON.parse(localStorage.getItem('accessToken') || '');
+});
 </script>
