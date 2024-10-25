@@ -1,6 +1,8 @@
 @use '../theme/theme' as theme;
 
 .header {
+  position: relative;
+  z-index: 2;
   padding: 20px 0;
   color: var(--colors-white);
 
@@ -31,13 +33,15 @@
 
   // .header__button
   &__button {
+    position: relative;
     display: flex;
-    flex-shrink: 1;
-    flex-flow: row nowrap;
     gap: 12px;
     align-items: center;
+    width: auto;
+    margin-left: auto;
     overflow: hidden;
 
+    // .header__button .button
     .button {
       @media screen and (max-width: theme.$break-md) {
         padding: 12px;
@@ -47,9 +51,34 @@
     // .header__button-email
     &-email {
       flex-grow: 0;
-      width: auto;
+      flex-shrink: 1;
+      width: min-content;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+  }
+
+  // .header__logout
+  &__logout {
+    position: absolute;
+    top: calc(100% + 21px);
+    right: var(--fields);
+    padding: 40px;
+    background-color: var(--colors-dark-middle);
+    border-radius: var(--radius-12);
+    box-shadow: 0 15px 46px -10px rgb(0 0 0 / 60%);
+
+    &::after {
+      position: absolute;
+      top: -18px;
+      right: 19px;
+      content: '';
+      border: 9px solid transparent;
+      border-bottom: 9px solid var(--colors-dark-middle);
+
+      @include theme.md {
+        right: 27px;
+      }
     }
   }
 }

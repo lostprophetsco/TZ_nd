@@ -34,11 +34,11 @@
               <use :href="`#${iconUser}`" />
             </svg>
           </Button>
-
-          <div class="header__button-logout" v-if="showLogout">
-            <!--            <a href="#" @click.stop="delAuth" class="link">Выйти</a>-->
-          </div>
         </template>
+      </div>
+
+      <div class="header__logout" v-if="showLogout && isUserAuth">
+        <a href="#" @click.stop="delAuth" class="link">Выйти</a>
       </div>
     </div>
   </header>
@@ -137,14 +137,14 @@ import CardNotice from './components/molecules/card/notice.vue';
 import Modal from './components/molecules/modal/modal.vue';
 
 // User
-const isUserAuth = ref(true);
+const isUserAuth = ref(false);
 interface IUser {
   email: string | number | Date | null;
 }
 const user = ref<IUser>({
   email: null,
 });
-const showLogout = ref(true);
+const showLogout = ref(false);
 
 // Modal
 const { toggleBodyClass } = useBody();
@@ -311,6 +311,10 @@ const getRegistration = (formData: IFormRegistrationModel) => {
       formError.value.message = error;
     });
   formLoading.value = false;
+};
+
+const delAuth = () => {
+  console.log('123');
 };
 
 // const delAuth = () => {
