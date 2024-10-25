@@ -8,10 +8,11 @@
   margin-top: 20px;
 
   @include theme.md {
+    min-height: calc(100dvh - 119px);
     margin-top: 40px;
   }
 
-  @include theme.md {
+  @include theme.lg {
     min-height: 100%;
   }
 
