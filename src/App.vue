@@ -51,26 +51,39 @@
   </header>
 
   <section v-if="!isUserAuth" class="hero">
-    <div class="container">123</div>
+    <div class="container hero__container">
+      <div class="hero__title">
+        <h1 class="hero__title-header">Мои заметки</h1>
+        Не забывай о важном, храни его в облаке.
+      </div>
+
+      <img
+        class="hero__image"
+        src="@/assets/images/hero.svg"
+        width="898"
+        height="864"
+        alt="notes"
+      />
+    </div>
   </section>
 
-  <CardNotice title="Lorem ipsum dolor sit amet consectetur adipisicing elit.">
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus cum earum facere laborum,
-    officia qui? Amet atque blanditiis culpa debitis, delectus distinctio eius esse et fugiat illo
-    illum ipsam itaque laboriosam molestias odit perferendis porro possimus provident quae quaerat
-    ratione saepe veniam?
-    <template #deleteButton>
-      <Button>
-        <template #icon>
-          <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-            <use :href="`#${iconClose}`" />
-          </svg>
-        </template>
+  <!--  <CardNotice title="Lorem ipsum dolor sit amet consectetur adipisicing elit.">-->
+  <!--    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus cum earum facere laborum,-->
+  <!--    officia qui? Amet atque blanditiis culpa debitis, delectus distinctio eius esse et fugiat illo-->
+  <!--    illum ipsam itaque laboriosam molestias odit perferendis porro possimus provident quae quaerat-->
+  <!--    ratione saepe veniam?-->
+  <!--    <template #deleteButton>-->
+  <!--      <Button>-->
+  <!--        <template #icon>-->
+  <!--          <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">-->
+  <!--            <use :href="`#${iconClose}`" />-->
+  <!--          </svg>-->
+  <!--        </template>-->
 
-        Удалить
-      </Button>
-    </template>
-  </CardNotice>
+  <!--        Удалить-->
+  <!--      </Button>-->
+  <!--    </template>-->
+  <!--  </CardNotice>-->
 
   <transition name="fade" mode="out-in">
     <Modal v-if="isModalOpened" :isOpen="isModalOpened" @modal-close="closeModal">
@@ -128,10 +141,10 @@
     </Modal>
   </transition>
 
-  <Button @click.stop="openModal('login')">Open modal login</Button>
-  <Button @click.stop="openModal('registration')">Open modal register</Button>
-  <Button @click.stop="openModal('addNote')">Open modal addNote</Button>
-  <Button @click="getAuth">Send auth</Button>
+  <!--  <Button @click.stop="openModal('login')">Open modal login</Button>-->
+  <!--  <Button @click.stop="openModal('registration')">Open modal register</Button>-->
+  <!--  <Button @click.stop="openModal('addNote')">Open modal addNote</Button>-->
+  <!--  <Button @click="getAuth">Send auth</Button>-->
 </template>
 <script setup lang="ts">
 // Imports

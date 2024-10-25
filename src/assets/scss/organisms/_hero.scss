@@ -1,0 +1,82 @@
+@use '../theme/theme' as theme;
+
+.hero {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  min-height: calc(100dvh - 119px);
+  margin-top: 20px;
+
+  @include theme.md {
+    margin-top: 40px;
+  }
+
+  @include theme.md {
+    min-height: 100%;
+  }
+
+  // .hero__container
+  &__container {
+    @include theme.grid(4, 4, 8, 12);
+
+    gap: 17px;
+    align-items: center;
+    justify-content: center;
+
+    @include theme.md {
+      gap: 0;
+    }
+
+    @include theme.lg {
+      gap: 12px;
+    }
+  }
+
+  // .hero__title
+  &__title {
+    display: flex;
+    flex-flow: column;
+    grid-column: span 4;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    color: var(--colors-gray);
+    text-align: center;
+
+    @include theme.text-style-helper(h3);
+
+    @include theme.md {
+      grid-column: span 8;
+    }
+
+    @include theme.lg {
+      grid-column: span 6;
+      gap: 40px;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    // .hero__title-header
+    &-header {
+      @include theme.text-style-helper(h1);
+
+      color: var(--colors-white);
+    }
+  }
+
+  // .hero__image
+  &__image {
+    grid-column: span 4;
+    align-self: flex-end;
+    margin: 0 auto;
+
+    @include theme.md {
+      grid-column: span 8;
+    }
+
+    @include theme.lg {
+      grid-column: span 6;
+    }
+  }
+}
