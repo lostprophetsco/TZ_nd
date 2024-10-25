@@ -28,8 +28,15 @@
         </Button>
 
         <template v-else>
-          <span class="header__button-email">{{ user.email || 'someLongLongTestEmail.com' }}</span>
-          <Button modifier="rounded" @click.stop="showLogout = !showLogout">
+          <span class="header__button-email">{{
+            userData.email || 'someLongLongTestEmail.com'
+          }}</span>
+          <Button
+            modifier="rounded"
+            @click.stop="isShowLogoutLinkVisible = !isShowLogoutLinkVisible"
+            aria-label="Show Logout Link"
+            :aria-expanded="isShowLogoutLinkVisible"
+          >
             <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
               <use :href="`#${iconUser}`" />
             </svg>
@@ -37,11 +44,15 @@
         </template>
       </div>
 
-      <div class="header__logout" v-if="showLogout && isUserAuth">
+      <div class="header__logout" v-if="isShowLogoutLinkVisible && isUserAuth">
         <a href="#" @click.stop="delAuth" class="link">Выйти</a>
       </div>
     </div>
   </header>
+
+  <section v-if="!isUserAuth" class="hero">
+    <div class="container">123</div>
+  </section>
 
   <CardNotice title="Lorem ipsum dolor sit amet consectetur adipisicing elit.">
     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus cum earum facere laborum,
@@ -66,10 +77,10 @@
       <keep-alive>
         <component
           :is="formComponent"
-          @submit="formHandler($event)"
-          :error="formError.status"
-          :success="formSuccess.status"
-          :loading="formLoading"
+          @submit="formHandlerFunction($event)"
+          :error="formErrorState.status"
+          :success="formSuccessState.status"
+          :loading="formLoadingState"
         >
           <template #buttonText>
             {{
@@ -97,9 +108,13 @@
             </div>
           </template>
 
-          <template #error>{{ formError.message }}</template>
+          <template #error>
+            <span v-for="(error, index) in formErrorState.message">
+              <span style="display: block" :key="index">{{ error }}</span>
+            </span>
+          </template>
 
-          <template #success>{{ formSuccess.message }}</template>
+          <template #success>{{ formSuccessState.message }}</template>
         </component>
       </keep-alive>
 
@@ -138,21 +153,21 @@ import Modal from './components/molecules/modal/modal.vue';
 
 // User
 const isUserAuth = ref(false);
-interface IUser {
+interface IUserData {
   email: string | number | Date | null;
 }
-const user = ref<IUser>({
+const userData = ref<IUserData>({
   email: null,
 });
-const showLogout = ref(false);
+const isShowLogoutLinkVisible = ref(false);
 
 // Modal
 const { toggleBodyClass } = useBody();
 const isModalOpened = ref(false);
 const openModal = (componentName: 'login' | 'registration' | 'addNote') => {
   formHandlerSwitcher(componentName);
-  formError.value.status = false;
-  formSuccess.value.status = false;
+  formErrorState.value.status = false;
+  formSuccessState.value.status = false;
   formComponent.value = formSwitcher(componentName);
   isModalOpened.value = true;
   toggleBodyClass('add', 'overflow-hidden');
@@ -165,21 +180,21 @@ const closeModal = () => {
 
 // Forms
 const formComponent = shallowRef(null as any);
-const formLoading = ref(false);
-const formHandler = ref();
+const formLoadingState = ref(false);
+const formHandlerFunction = ref();
 
 /**
  * @description Form status interface
  */
-interface IFormStatus {
+interface IFormState {
   status: boolean;
   message: string;
 }
-const formError = ref<IFormStatus>({
+const formErrorState = ref<IFormState>({
   status: false,
   message: '',
 });
-const formSuccess = ref<IFormStatus>({
+const formSuccessState = ref<IFormState>({
   status: false,
   message: '',
 });
@@ -223,9 +238,9 @@ const regEndPoint = 'https://dist.nd.ru/api/reg';
  * @description Send auth request to get access token
  */
 const getAuth = (formData: IFormLoginModel) => {
-  formLoading.value = true;
-  formSuccess.value.status = false;
-  formError.value.status = false;
+  formLoadingState.value = true;
+  formSuccessState.value.status = false;
+  formErrorState.value.status = false;
 
   const bodyData = {
     email: formData.email,
@@ -243,37 +258,37 @@ const getAuth = (formData: IFormLoginModel) => {
     .then((data) => {
       if (data.statusCode !== 200) {
         console.log(data, 'эне ок');
-        formError.value.status = true;
-        formError.value.message = data.message;
+        formErrorState.value.status = true;
+        formErrorState.value.message = data.message;
       } else {
         console.log(data, 'ok');
         isUserAuth.value = true;
         token.value = data.accessToken;
         localStorage.setItem('accessToken', JSON.stringify(data.accessToken));
         localStorage.setItem('email', JSON.stringify(bodyData.email));
-        user.value.email = bodyData.email;
-        formSuccess.value.status = true;
-        formSuccess.value.message =
+        userData.value.email = bodyData.email;
+        formSuccessState.value.status = true;
+        formSuccessState.value.message =
           'Авторизация прошла успешно. Закройте окно или оно само будет закрыто через 5 секунд';
 
         setTimeout(() => {
-          formSuccess.value.status = false;
+          formSuccessState.value.status = false;
           closeModal();
         }, 5000);
       }
     })
     .catch((error) => {
       console.log(error);
-      formError.value.status = true;
-      formError.value.message = error;
+      formErrorState.value.status = true;
+      formErrorState.value.message = error;
     });
-  formLoading.value = false;
+  formLoadingState.value = false;
 };
 
 const getRegistration = (formData: IFormRegistrationModel) => {
-  formLoading.value = true;
-  formError.value.status = false;
-  formSuccess.value.status = false;
+  formLoadingState.value = true;
+  formErrorState.value.status = false;
+  formSuccessState.value.status = false;
 
   const bodyData = {
     email: formData.email,
@@ -292,25 +307,25 @@ const getRegistration = (formData: IFormRegistrationModel) => {
     .then((data) => {
       if (data.statusCode) {
         console.log(data, 'эне ок reg');
-        formError.value.status = true;
-        formError.value.message = data.message;
+        formErrorState.value.status = true;
+        formErrorState.value.message = data.message;
       } else {
         console.log(data, 'ok reg');
-        formSuccess.value.status = true;
-        formSuccess.value.message = 'Теперь вы можете войти в аккаунт';
+        formSuccessState.value.status = true;
+        formSuccessState.value.message = 'Теперь вы можете войти в аккаунт';
 
         setTimeout(() => {
-          formSuccess.value.status = false;
+          formSuccessState.value.status = false;
           closeModal();
         }, 5000);
       }
     })
     .catch((error) => {
       console.log(error);
-      formError.value.status = true;
-      formError.value.message = error;
+      formErrorState.value.status = true;
+      formErrorState.value.message = error;
     });
-  formLoading.value = false;
+  formLoadingState.value = false;
 };
 
 const delAuth = () => {
@@ -319,7 +334,7 @@ const delAuth = () => {
 
 // const delAuth = () => {
 //   const data = {
-//     email: 'user@example.com',
+//     email: 'userData@example.com',
 //     password: '123123',
 //   };
 //   fetch(authEndPoint, {
@@ -341,8 +356,8 @@ const delAuth = () => {
 //     if (token.value) {
 //       localStorage.removeItem('accessToken');
 //       token.value = null;
-//       user.value.email = '';
-//       showLogout.value = false;
+//       userData.value.email = '';
+//       isShowLogoutLinkVisible.value = false;
 //     }
 //   }
 // };
@@ -395,13 +410,13 @@ const delAuth = () => {
 const formHandlerSwitcher = (formName: 'login' | 'registration' | 'addNote') => {
   switch (formName) {
     case 'login':
-      formHandler.value = getAuth;
+      formHandlerFunction.value = getAuth;
       break;
     case 'registration':
-      formHandler.value = getRegistration;
+      formHandlerFunction.value = getRegistration;
       break;
     case 'addNote':
-      // formHandler.value = addNote;
+      // formHandlerFunction.value = addNote;
       break;
   }
 };
@@ -410,7 +425,7 @@ onMounted(() => {
   if (!token.value || token.value === 'null') return;
 
   isUserAuth.value = true;
-  user.value.email = JSON.parse(localStorage.getItem('email') || '');
+  userData.value.email = JSON.parse(localStorage.getItem('email') || '');
   token.value = JSON.parse(localStorage.getItem('accessToken') || '');
 });
 </script>
