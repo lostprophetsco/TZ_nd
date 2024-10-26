@@ -4,7 +4,11 @@
   display: flex;
   flex-flow: column;
   clip-path: polygon(calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%, 0 0);
+  hyphens: auto;
   color: var(--colors-white);
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  white-space: wrap;
   background-color: var(--colors-green-light);
   border-radius: var(--radius-12);
 
@@ -27,8 +31,6 @@
   // .card-notice__body
   &__body {
     padding: 20px 28px;
-    word-break: break-all;
-    white-space: wrap;
   }
 
   // .card-notice__footer
